@@ -801,12 +801,22 @@ Scatter.prototype.updateColor = function (colors) {
 		colors = grouped
 	}
 
+    let unique_colors = new Map()
 	for (let i = 0; i < colors.length; i++) {
 		let color = colors[i]
 
-		color = rgba(color, 'uint8')
-
-		let id = colorId(color, false)
+        if (unique_colors.has(color))
+        {
+            color = unique_colors.get(color)
+        }
+        else
+        {
+            let tmp = color
+            color = rgba(color, 'uint8')
+            unique_colors.set(tmp, color)
+        }
+       
+        let id = colorId(color, false)
 
 		// if new color - save it
 		if (paletteIds[id] == null) {
