@@ -885,9 +885,19 @@ Scatter.prototype.updateColor = function (colors) {
     colors = grouped;
   }
 
+  var unique_colors = new Map();
   for (var _i6 = 0; _i6 < colors.length; _i6++) {
     var color = colors[_i6];
-    color = rgba(color, 'uint8');
+    if (unique_colors.has(color))
+    {
+        color = unique_colors.get(color);
+    }
+    else
+    {
+        var tmp = color;
+        color = rgba(color, 'uint8');
+        unique_colors.set(tmp, color);
+    }
     var id = colorId(color, false); // if new color - save it
 
     if (paletteIds[id] == null) {
