@@ -885,32 +885,40 @@ Scatter.prototype.updateColor = function (colors) {
     colors = grouped;
   }
 
-  var unique_colors = new Map();
-  for (var _i6 = 0; _i6 < colors.length; _i6++) {
-    var color = colors[_i6];
-    if (unique_colors.has(color))
-    {
-        color = unique_colors.get(color);
-    }
-    else
-    {
-        var tmp = color;
-        color = rgba(color, 'uint8');
-        unique_colors.set(tmp, color);
-    }
-    var id = colorId(color, false); // if new color - save it
-
-    if (paletteIds[id] == null) {
-      var pos = palette.length;
-      paletteIds[id] = Math.floor(pos / 4);
-      palette[pos] = color[0];
-      palette[pos + 1] = color[1];
-      palette[pos + 2] = color[2];
-      palette[pos + 3] = color[3];
+    var r,g,b,a;
+    function my_normalize (color) {
+        r = Math.floor(color[0] * 255);
+        g = Math.floor(color[1] * 255);
+        b = Math.floor(color[2] * 255);
+        a = Math.floor(color[3] * 255);
     }
 
-    idx[_i6] = paletteIds[id];
-  } // detect if too many colors in palette
+    function my_toNumber () {
+        var n = (r * 0x01000000) + (g << 16) + (b << 8) + a;
+        return n;
+    }
+
+    for (var _i6 = 0; _i6 < colors.length; _i6++) {
+        let color = colors[_i6];
+
+        my_normalize(color);
+        var id = my_toNumber();
+
+        var paletteId = paletteIds[id];
+        if (paletteId == null) {
+          var pos = palette.length;
+          paletteId =  Math.floor(pos / 4);
+          paletteIds[id] = paletteId;
+          palette[pos] = r;
+          palette[pos + 1] = g;
+          palette[pos + 2] = b;
+          palette[pos + 3] = a;
+          idx[_i6] = paletteId;
+        }
+        else {
+          idx[_i6] = paletteId;
+        }
+    }
 
 
   if (!this.tooManyColors && palette.length > maxColors * 4) this.tooManyColors = true; // limit max color
